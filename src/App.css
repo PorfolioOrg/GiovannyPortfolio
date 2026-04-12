@@ -1,0 +1,8 @@
+/* Page shell: full-width column so sections can use their own max-width. */
+.app {
+  min-height: 100svh;
+}
+
+.app main {
+  display: block;
+}

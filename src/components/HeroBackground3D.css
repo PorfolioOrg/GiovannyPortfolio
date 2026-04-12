@@ -1,0 +1,31 @@
+.hero__bg-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+.hero__canvas {
+  position: absolute;
+  inset: 0;
+}
+
+.hero__canvas-gl {
+  width: 100% !important;
+  height: 100% !important;
+  display: block;
+}
+
+.hero__bg-dim {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: radial-gradient(
+    ellipse 70% 58% at 50% 50%,
+    color-mix(in srgb, var(--bg) 35%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 88%, transparent) 72%,
+    var(--bg) 100%
+  );
+}

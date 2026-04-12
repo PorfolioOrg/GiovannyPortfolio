@@ -1,0 +1,54 @@
+/* Design tokens: one place for color, type scale, and layout width. */
+:root {
+  /* Dark mode preview — swap these values to revert to the light palette */
+  --bg: #0f0f10;
+  --fg: #f4f4f5;
+  --muted: #a1a1aa;
+  --line: #2a2a2e;
+  --surface: #18181b;
+  --accent: #60a5fa;
+  --max: 68rem;
+  color-scheme: dark;
+  font-family: 'Inter', system-ui, sans-serif;
+  line-height: 1.5;
+  color: var(--fg);
+  background: var(--bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Smooth in-page jumps; offset for fixed header */
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5.5rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+}
+
+#root {
+  min-height: 100svh;
+}
+
+h1,
+h2,
+h3 {
+  font-family: 'Syne', system-ui, sans-serif;
+}
+
+a:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}

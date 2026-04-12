@@ -1,0 +1,65 @@
+.resume {
+  padding: clamp(4rem, 10vw, 6rem) clamp(1.25rem, 4vw, 2.5rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.resume__container {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+.resume__timeline {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  border-left: 1px solid var(--line);
+  margin-left: 0.5rem;
+}
+
+.resume__item {
+  position: relative;
+  padding: 0 0 2rem 1.75rem;
+}
+
+.resume__item:last-child {
+  padding-bottom: 0;
+}
+
+/* Dot on the timeline */
+.resume__item::before {
+  content: '';
+  position: absolute;
+  left: -0.5rem;
+  top: 0.35rem;
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--fg);
+  box-shadow: 0 0 0 3px var(--bg);
+}
+
+.resume__period {
+  display: block;
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin-bottom: 0.35rem;
+}
+
+.resume__title {
+  font-size: 1.0625rem;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+  color: var(--fg);
+}
+
+.resume__detail {
+  margin: 0;
+  font-size: 0.9375rem;
+  line-height: 1.55;
+  color: var(--muted);
+}

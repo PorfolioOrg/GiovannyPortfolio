@@ -1,0 +1,37 @@
+.art {
+  padding: clamp(4rem, 10vw, 6rem) clamp(1.25rem, 4vw, 2.5rem);
+  border-bottom: 1px solid var(--line);
+}
+
+.art__container {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+.art__grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 16rem), 1fr));
+  gap: clamp(1rem, 2vw, 1.5rem);
+}
+
+.art__figure {
+  margin: 0;
+}
+
+.art__figure img {
+  width: 100%;
+  height: auto;
+  display: block;
+  background: var(--surface);
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.art__figure figcaption {
+  margin-top: 0.5rem;
+  font-size: 0.8125rem;
+  color: var(--muted);
+}

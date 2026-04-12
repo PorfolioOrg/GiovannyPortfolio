@@ -1,0 +1,48 @@
+.contact {
+  padding: clamp(4rem, 10vw, 6rem) clamp(1.25rem, 4vw, 2.5rem) clamp(5rem, 12vw, 7rem);
+}
+
+.contact__container {
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+.contact__links {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  align-items: flex-start;
+}
+
+.contact__email {
+  font-size: clamp(1.125rem, 2.5vw, 1.35rem);
+  font-weight: 500;
+  color: var(--fg);
+  text-decoration: none;
+  border-bottom: 1px solid var(--line);
+  padding-bottom: 0.15rem;
+}
+
+.contact__email:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.contact__social {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem 1.5rem;
+}
+
+.contact__social a {
+  color: var(--muted);
+  text-decoration: none;
+  font-size: 0.9375rem;
+}
+
+.contact__social a:hover {
+  color: var(--fg);
+}
