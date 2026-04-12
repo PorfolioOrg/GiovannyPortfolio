@@ -3,14 +3,16 @@ import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFBX, useGLTF } from '@react-three/drei'
 import {
   ACESFilmicToneMapping,
+  Box3,
   Color,
   MeshStandardMaterial,
   SRGBColorSpace,
+  Vector3,
 } from 'three'
 import './HeroBackground3D.css'
 
 /**
- * FBX from `src/assets` (bundled URL) takes priority; otherwise `public/models/ChestScene.fbx`.
+ * FBX from `src/assets` (bundled URL) takes priority; otherwise `public/models/Jug1.fbx`.
  * Vite must treat `.fbx` as a static asset — see `assetsInclude` in `vite.config.js`.
  */
 function publicAssetUrl(relativePath) {
@@ -33,12 +35,12 @@ const fbxAssetMap = {
   }),
 }
 const FBX_FROM_ASSETS = Object.values(fbxAssetMap)[0] ?? null
-const HERO_FBX_URL = FBX_FROM_ASSETS || publicAssetUrl('models/ChestScene.fbx')
+const HERO_FBX_URL = FBX_FROM_ASSETS || publicAssetUrl('models/Jug1.fbx')
 /** Only used if the FBX fails to load (missing file, parse error, etc.) */
 const FALLBACK_GLTF_URL = publicAssetUrl('models/duck.glb')
 
-/** Warm stone tones for meshes with no usable textures (reads on dark UI backgrounds). */
-const FBX_FALLBACK_COLORS = ['#9c8f82', '#8f8278', '#a39688']
+/** Fallback PBR tints when textures are missing (matches cool UI palette). */
+const FBX_FALLBACK_COLORS = ['#7eb8e8', '#6aa8d8', '#8dc6ff']
 
 function detachMapsForDispose(material) {
   if (!material) return
@@ -76,13 +78,17 @@ function useFbxHeroMaterials(root) {
     let meshIndex = 0
     root.traverse((obj) => {
       if (!obj.isMesh) return
+      obj.frustumCulled = false
 
       const prev = obj.material
       const list = Array.isArray(prev) ? prev : [prev]
       const next = list.map((old, i) => {
         if (!old) {
+          const c = new Color(FBX_FALLBACK_COLORS[meshIndex % FBX_FALLBACK_COLORS.length])
           return new MeshStandardMaterial({
-            color: new Color(FBX_FALLBACK_COLORS[meshIndex % FBX_FALLBACK_COLORS.length]),
+            color: c,
+            emissive: c,
+            emissiveIntensity: 0.12,
             metalness: 0.12,
             roughness: 0.76,
           })
@@ -129,6 +135,8 @@ function useFbxHeroMaterials(root) {
           FBX_FALLBACK_COLORS[(meshIndex + i) % FBX_FALLBACK_COLORS.length]
         return new MeshStandardMaterial({
           color: new Color(pick),
+          emissive: new Color(pick),
+          emissiveIntensity: 0.12,
           metalness: 0.1,
           roughness: 0.78,
         })
@@ -142,10 +150,43 @@ function useFbxHeroMaterials(root) {
   }, [root])
 }
 
+/**
+ * Chest-style scenes often have huge floor/wall meshes off the pivot—centering + uniform scale
+ * keeps rotation around the visual mass so geometry doesn’t “lunge” into the camera.
+ */
+function useHeroFbxCenterAndUniformScale(root, targetMax = 2.35) {
+  useLayoutEffect(() => {
+    if (!root || root.userData.heroFbxLayout) return undefined
+
+    root.updateMatrixWorld(true)
+    const box = new Box3().setFromObject(root, true)
+    if (box.isEmpty()) {
+      root.userData.heroFbxLayout = 'skip-empty-bounds'
+      return undefined
+    }
+
+    const center = new Vector3()
+    const size = new Vector3()
+    box.getCenter(center)
+    box.getSize(size)
+    const maxDim = Math.max(size.x, size.y, size.z, 0)
+    if (!Number.isFinite(center.x) || !Number.isFinite(maxDim) || maxDim < 1e-8) {
+      root.userData.heroFbxLayout = 'skip-bad-bounds'
+      return undefined
+    }
+
+    root.userData.heroFbxLayout = true
+    root.position.sub(center)
+    root.scale.setScalar(targetMax / maxDim)
+
+    return undefined
+  }, [root, targetMax])
+}
+
 /** World-space Y before applying the screen-pixel nudge below. */
-const HERO_MODEL_BASE_Y = -1.72
+const HERO_MODEL_BASE_Y = -0.92
 /** Extra downward shift on screen, in CSS pixels (converted via camera + canvas size). */
-const HERO_NUDGE_DOWN_PX = 60
+const HERO_NUDGE_DOWN_PX = 14
 
 function useHeroModelGroupY() {
   const { camera, size } = useThree()
@@ -176,7 +217,8 @@ function SpinningPrimitive({ object, scale }) {
 function SpinningFBX({ url }) {
   const fbx = useFBX(url)
   useFbxHeroMaterials(fbx)
-  return <SpinningPrimitive object={fbx} scale={0.11} />
+  useHeroFbxCenterAndUniformScale(fbx, 2.35)
+  return <SpinningPrimitive object={fbx} scale={1.12} />
 }
 
 function SpinningGLTF({ url }) {
@@ -215,6 +257,7 @@ class ModelErrorBoundary extends Component {
     console.warn(
       `[HeroBackground3D] ${this.props.label ?? 'model'} load failed:`,
       error?.message ?? error,
+      import.meta.env.DEV ? `(url: ${HERO_FBX_URL})` : '',
     )
   }
 
@@ -247,22 +290,22 @@ function Scene() {
   return (
     <>
       {/* Dark-site lighting: soft fill + keyed rim; intensities kept moderate to avoid a flat/washed look */}
-      <ambientLight intensity={0.34} />
+      <ambientLight intensity={0.48} />
       <hemisphereLight
-        skyColor="#3d3d48"
-        groundColor="#18181c"
-        intensity={0.42}
+        skyColor="#34495e"
+        groundColor="#22313f"
+        intensity={0.55}
       />
       <directionalLight
         position={[6, 10, 5]}
-        intensity={0.88}
-        color="#f2ebe3"
+        intensity={1.05}
+        color="#e4f1fe"
         castShadow={false}
       />
       <directionalLight
         position={[-5, 4, -5]}
-        intensity={0.26}
-        color="#b8c0d4"
+        intensity={0.38}
+        color="#8dc6ff"
         castShadow={false}
       />
       <HeroModel />
@@ -284,12 +327,16 @@ export function HeroBackground3D() {
             gl={{
               alpha: true,
               antialias: true,
-              powerPreference: 'high-performance',
+              powerPreference: 'default',
             }}
             onCreated={({ gl }) => {
               gl.outputColorSpace = SRGBColorSpace
               gl.toneMapping = ACESFilmicToneMapping
-              gl.toneMappingExposure = 0.82
+              gl.toneMappingExposure = 0.98
+              if (import.meta.env.DEV) {
+                // eslint-disable-next-line no-console
+                console.info('[HeroBackground3D] FBX URL:', HERO_FBX_URL)
+              }
             }}
             dpr={[1, 1.75]}
           >

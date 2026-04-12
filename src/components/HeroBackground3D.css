@@ -9,6 +9,7 @@
 .hero__canvas {
   position: absolute;
   inset: 0;
+  z-index: 0;
 }
 
 .hero__canvas-gl {
@@ -23,9 +24,9 @@
   z-index: 1;
   pointer-events: none;
   background: radial-gradient(
-    ellipse 70% 58% at 50% 50%,
-    color-mix(in srgb, var(--bg) 35%, transparent) 0%,
-    color-mix(in srgb, var(--bg) 88%, transparent) 72%,
-    var(--bg) 100%
+    ellipse 72% 60% at 50% 48%,
+    color-mix(in srgb, var(--bg) 18%, transparent) 0%,
+    color-mix(in srgb, var(--bg) 78%, transparent) 68%,
+    color-mix(in srgb, var(--bg) 96%, transparent) 100%
   );
 }

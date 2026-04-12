@@ -1,12 +1,15 @@
 /* Design tokens: one place for color, type scale, and layout width. */
 :root {
-  /* Dark mode preview — swap these values to revert to the light palette */
-  --bg: #0f0f10;
-  --fg: #f4f4f5;
-  --muted: #a1a1aa;
-  --line: #2a2a2e;
-  --surface: #18181b;
-  --accent: #60a5fa;
+  /*
+   * Custom palette:
+   * #e4f1fe · #8dc6ff · #22313f · #34495e
+   */
+  --bg: #22313f;
+  --surface: #34495e;
+  --fg: #e4f1fe;
+  --muted: #a8c5dc;
+  --line: #3d5666;
+  --accent: #8dc6ff;
   --max: 68rem;
   color-scheme: dark;
   font-family: 'Inter', system-ui, sans-serif;
