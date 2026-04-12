@@ -10,5 +10,5 @@ export default defineConfig(({ mode }) => ({
   base: mode === 'production' ? GH_PAGES_BASE : '/',
   plugins: [react()],
   /** So `import '…/file.fbx?url'` works from `src/assets` */
-  assetsInclude: ['**/*.fbx', '**/*.FBX'],
+  assetsInclude: ['**/*.fbx', '**/*.FBX', '**/*.pdf'],
 }))

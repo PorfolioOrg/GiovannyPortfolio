@@ -1,12 +1,25 @@
-import { Component, Suspense, useRef } from 'react'
-import { Canvas, useFrame } from '@react-three/fiber'
+import { Component, Suspense, useLayoutEffect, useMemo, useRef } from 'react'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { useFBX, useGLTF } from '@react-three/drei'
+import {
+  ACESFilmicToneMapping,
+  Color,
+  MeshStandardMaterial,
+  SRGBColorSpace,
+} from 'three'
 import './HeroBackground3D.css'
 
 /**
- * FBX from `src/assets` (bundled URL) takes priority; otherwise `public/models/jug1.fbx`.
+ * FBX from `src/assets` (bundled URL) takes priority; otherwise `public/models/ChestScene.fbx`.
  * Vite must treat `.fbx` as a static asset — see `assetsInclude` in `vite.config.js`.
  */
+function publicAssetUrl(relativePath) {
+  const base = import.meta.env.BASE_URL.endsWith('/')
+    ? import.meta.env.BASE_URL
+    : `${import.meta.env.BASE_URL}/`
+  return `${base}${relativePath.replace(/^\//, '')}`
+}
+
 const fbxAssetMap = {
   ...import.meta.glob('../assets/*.fbx', {
     eager: true,
@@ -20,18 +33,141 @@ const fbxAssetMap = {
   }),
 }
 const FBX_FROM_ASSETS = Object.values(fbxAssetMap)[0] ?? null
-const HERO_FBX_URL = FBX_FROM_ASSETS || '/models/jug1.fbx'
-const FALLBACK_GLTF_URL = '/models/duck.glb'
+const HERO_FBX_URL = FBX_FROM_ASSETS || publicAssetUrl('models/ChestScene.fbx')
+/** Only used if the FBX fails to load (missing file, parse error, etc.) */
+const FALLBACK_GLTF_URL = publicAssetUrl('models/duck.glb')
 
-function SpinningPrimitive({ object, scale = 1.35 }) {
+/** Warm stone tones for meshes with no usable textures (reads on dark UI backgrounds). */
+const FBX_FALLBACK_COLORS = ['#9c8f82', '#8f8278', '#a39688']
+
+function detachMapsForDispose(material) {
+  if (!material) return
+  const keys = [
+    'map',
+    'normalMap',
+    'roughnessMap',
+    'metalnessMap',
+    'aoMap',
+    'emissiveMap',
+    'bumpMap',
+    'displacementMap',
+  ]
+  keys.forEach((k) => {
+    material[k] = null
+  })
+}
+
+function disposeMaterial(material) {
+  if (!material) return
+  detachMapsForDispose(material)
+  material.dispose?.()
+}
+
+/**
+ * FBX often loads as flat gray (missing textures, Phong/Lambert only). Upgrade to MeshStandardMaterial:
+ * keep maps when present; otherwise assign a simple PBR material so lighting reads clearly.
+ */
+function useFbxHeroMaterials(root) {
+  useLayoutEffect(() => {
+    if (!root) return undefined
+    if (root.userData.heroMaterialsNormalized) return undefined
+    root.userData.heroMaterialsNormalized = true
+
+    let meshIndex = 0
+    root.traverse((obj) => {
+      if (!obj.isMesh) return
+
+      const prev = obj.material
+      const list = Array.isArray(prev) ? prev : [prev]
+      const next = list.map((old, i) => {
+        if (!old) {
+          return new MeshStandardMaterial({
+            color: new Color(FBX_FALLBACK_COLORS[meshIndex % FBX_FALLBACK_COLORS.length]),
+            metalness: 0.12,
+            roughness: 0.76,
+          })
+        }
+
+        const hasVertexColors = Boolean(old.vertexColors)
+        const map = old.map
+        const hasMap = Boolean(map?.image || map?.source?.data)
+
+        if (hasVertexColors) {
+          disposeMaterial(old)
+          return new MeshStandardMaterial({
+            vertexColors: true,
+            color: 0xffffff,
+            metalness: 0.08,
+            roughness: 0.74,
+          })
+        }
+
+        if (hasMap) {
+          const neo = new MeshStandardMaterial({
+            map,
+            color: old.color?.clone() ?? new Color(0xffffff),
+            roughness:
+              typeof old.roughness === 'number' ? old.roughness : 0.68,
+            metalness:
+              typeof old.metalness === 'number' ? old.metalness : 0.12,
+            normalMap: old.normalMap || null,
+            aoMap: old.aoMap || null,
+            emissiveMap: old.emissiveMap || null,
+            emissive: old.emissive?.clone?.() ?? new Color(0x000000),
+            emissiveIntensity: old.emissiveIntensity ?? 0,
+            transparent: old.transparent,
+            opacity: old.opacity ?? 1,
+            side: old.side,
+          })
+          detachMapsForDispose(old)
+          old.dispose?.()
+          return neo
+        }
+
+        disposeMaterial(old)
+        const pick =
+          FBX_FALLBACK_COLORS[(meshIndex + i) % FBX_FALLBACK_COLORS.length]
+        return new MeshStandardMaterial({
+          color: new Color(pick),
+          metalness: 0.1,
+          roughness: 0.78,
+        })
+      })
+
+      obj.material = next.length === 1 ? next[0] : next
+      meshIndex += 1
+    })
+
+    return undefined
+  }, [root])
+}
+
+/** World-space Y before applying the screen-pixel nudge below. */
+const HERO_MODEL_BASE_Y = -1.72
+/** Extra downward shift on screen, in CSS pixels (converted via camera + canvas size). */
+const HERO_NUDGE_DOWN_PX = 60
+
+function useHeroModelGroupY() {
+  const { camera, size } = useThree()
+  return useMemo(() => {
+    const vFov = (camera.fov * Math.PI) / 180
+    const visibleHeight =
+      2 * Math.tan(vFov / 2) * Math.abs(camera.position.z)
+    const worldUnitsPerPixel = visibleHeight / size.height
+    return HERO_MODEL_BASE_Y - HERO_NUDGE_DOWN_PX * worldUnitsPerPixel
+  }, [camera.fov, camera.position.z, size.height])
+}
+
+function SpinningPrimitive({ object, scale }) {
   const groupRef = useRef(null)
+  const y = useHeroModelGroupY()
 
   useFrame((_, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += delta * 0.65
   })
 
   return (
-    <group ref={groupRef} position={[0, -0.72, 0]}>
+    <group ref={groupRef} position={[0, y, 0]}>
       <primitive object={object} scale={scale} />
     </group>
   )
@@ -39,22 +175,24 @@ function SpinningPrimitive({ object, scale = 1.35 }) {
 
 function SpinningFBX({ url }) {
   const fbx = useFBX(url)
-  return <SpinningPrimitive object={fbx} />
+  useFbxHeroMaterials(fbx)
+  return <SpinningPrimitive object={fbx} scale={0.11} />
 }
 
 function SpinningGLTF({ url }) {
   const { scene } = useGLTF(url)
-  return <SpinningPrimitive object={scene} />
+  return <SpinningPrimitive object={scene} scale={2.2} />
 }
 
 /** Last resort if both FBX and GLB fail (missing file, parse error, etc.) */
 function SpinningPlaceholder() {
   const groupRef = useRef(null)
+  const y = useHeroModelGroupY()
   useFrame((_, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += delta * 0.65
   })
   return (
-    <group ref={groupRef} position={[0, -0.72, 0]}>
+    <group ref={groupRef} position={[0, y, 0]}>
       <mesh>
         <boxGeometry args={[0.85, 1.15, 0.85]} />
         <meshStandardMaterial color="#6b7280" roughness={0.55} metalness={0.15} />
@@ -108,9 +246,25 @@ function HeroModel() {
 function Scene() {
   return (
     <>
-      <ambientLight intensity={0.55} />
-      <directionalLight position={[6, 8, 4]} intensity={1.15} castShadow={false} />
-      <directionalLight position={[-4, 2, -6]} intensity={0.35} />
+      {/* Dark-site lighting: soft fill + keyed rim; intensities kept moderate to avoid a flat/washed look */}
+      <ambientLight intensity={0.34} />
+      <hemisphereLight
+        skyColor="#3d3d48"
+        groundColor="#18181c"
+        intensity={0.42}
+      />
+      <directionalLight
+        position={[6, 10, 5]}
+        intensity={0.88}
+        color="#f2ebe3"
+        castShadow={false}
+      />
+      <directionalLight
+        position={[-5, 4, -5]}
+        intensity={0.26}
+        color="#b8c0d4"
+        castShadow={false}
+      />
       <HeroModel />
     </>
   )
@@ -126,11 +280,16 @@ export function HeroBackground3D() {
         <Suspense fallback={null}>
           <Canvas
             className="hero__canvas-gl"
-            camera={{ position: [0, 0, 5.75], fov: 40, near: 0.1, far: 100 }}
+            camera={{ position: [0, 0, 12.5], fov: 46, near: 0.1, far: 120 }}
             gl={{
               alpha: true,
               antialias: true,
               powerPreference: 'high-performance',
+            }}
+            onCreated={({ gl }) => {
+              gl.outputColorSpace = SRGBColorSpace
+              gl.toneMapping = ACESFilmicToneMapping
+              gl.toneMappingExposure = 0.82
             }}
             dpr={[1, 1.75]}
           >

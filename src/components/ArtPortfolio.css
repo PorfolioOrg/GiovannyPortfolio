@@ -21,13 +21,35 @@
   margin: 0;
 }
 
-.art__figure img {
+.art__thumb {
+  display: block;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  border: none;
+  cursor: zoom-in;
+  background: var(--surface);
+  border-radius: 0.125rem;
+  overflow: hidden;
+}
+
+.art__thumb:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 3px;
+}
+
+.art__thumb:hover img {
+  opacity: 0.92;
+}
+
+.art__thumb img {
   width: 100%;
   height: auto;
   display: block;
   background: var(--surface);
   aspect-ratio: 4 / 5;
   object-fit: cover;
+  transition: opacity 0.2s ease;
 }
 
 .art__figure figcaption {

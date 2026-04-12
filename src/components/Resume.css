@@ -8,58 +8,73 @@
   margin: 0 auto;
 }
 
-.resume__timeline {
+.resume__pdf-lead {
+  margin: 0 0 2rem;
+  font-size: 0.9375rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+.resume__pdf-link {
+  font-weight: 500;
+  color: var(--accent);
+  text-decoration: none;
+  border-bottom: 1px solid color-mix(in srgb, var(--accent) 40%, transparent);
+}
+
+.resume__pdf-link:hover {
+  border-bottom-color: var(--accent);
+}
+
+.resume__section-label {
+  font-family: 'Syne', system-ui, sans-serif;
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 1rem;
+}
+
+.resume__roles {
   list-style: none;
   margin: 0;
   padding: 0;
+  border-top: 1px solid var(--line);
+}
+
+.resume__role {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.5rem 1.25rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.resume__role-text {
   display: flex;
   flex-direction: column;
-  gap: 0;
-  border-left: 1px solid var(--line);
-  margin-left: 0.5rem;
+  gap: 0.2rem;
+  min-width: min(100%, 16rem);
 }
 
-.resume__item {
-  position: relative;
-  padding: 0 0 2rem 1.75rem;
-}
-
-.resume__item:last-child {
-  padding-bottom: 0;
-}
-
-/* Dot on the timeline */
-.resume__item::before {
-  content: '';
-  position: absolute;
-  left: -0.5rem;
-  top: 0.35rem;
-  width: 0.5rem;
-  height: 0.5rem;
-  border-radius: 50%;
-  background: var(--fg);
-  box-shadow: 0 0 0 3px var(--bg);
-}
-
-.resume__period {
-  display: block;
-  font-size: 0.75rem;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  color: var(--muted);
-  margin-bottom: 0.35rem;
-}
-
-.resume__title {
-  font-size: 1.0625rem;
+.resume__role-title {
+  font-size: 1rem;
   font-weight: 600;
-  margin: 0 0 0.5rem;
   color: var(--fg);
 }
 
-.resume__detail {
-  margin: 0;
-  font-size: 0.9375rem;
-  line-height: 1.55;
+.resume__role-meta {
+  font-size: 0.875rem;
   color: var(--muted);
+  line-height: 1.4;
+}
+
+.resume__role-dates {
+  font-size: 0.8125rem;
+  color: var(--muted);
+  white-space: nowrap;
+  margin-left: auto;
 }

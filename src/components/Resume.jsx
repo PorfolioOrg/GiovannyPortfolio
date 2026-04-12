@@ -1,4 +1,5 @@
-import { resumeItems } from '../data/siteContent'
+import resumePdfUrl from '../assets/GioResume.pdf?url'
+import { resumeProfile as r } from '../data/siteContent'
 import { SectionHeading } from './SectionHeading'
 import './Resume.css'
 
@@ -10,19 +11,33 @@ export function Resume() {
           id="resume-heading"
           eyebrow="Background"
           title="Resume"
-          intro="A concise path from visual design to building on the web."
+          intro="Work history at a glance. Download the PDF for the full résumé."
         />
-        <ol className="resume__timeline">
-          {resumeItems.map((item) => (
-            <li key={item.title} className="resume__item">
-              <span className="resume__period">{item.period}</span>
-              <div className="resume__body">
-                <h3 className="resume__title">{item.title}</h3>
-                <p className="resume__detail">{item.detail}</p>
+
+        <p className="resume__pdf-lead">
+          <a
+            className="resume__pdf-link"
+            href={resumePdfUrl}
+            download="GioResume.pdf"
+          >
+            Download résumé (PDF)
+          </a>
+        </p>
+
+        <h3 className="resume__section-label">Experience</h3>
+        <ul className="resume__roles">
+          {r.experience.map((job) => (
+            <li key={`${job.company}-${job.dateRange}`} className="resume__role">
+              <div className="resume__role-text">
+                <span className="resume__role-title">{job.title}</span>
+                <span className="resume__role-meta">
+                  {job.company} · {job.location}
+                </span>
               </div>
+              <span className="resume__role-dates">{job.dateRange}</span>
             </li>
           ))}
-        </ol>
+        </ul>
       </div>
     </section>
   )
