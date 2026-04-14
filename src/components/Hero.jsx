@@ -13,14 +13,10 @@ export function Hero() {
         <HeroBackground3D />
       </Suspense>
       <div className="hero__inner">
-        {/* Placeholder mark: swap for SVG/wordmark when ready */}
-        <div className="hero__logo" aria-hidden="true">
-          <span className="hero__logo-text">GM</span>
-        </div>
         <h1 id="hero-title" className="hero__name">
           {site.name}
         </h1>
-        <p className="hero__tagline">{site.tagline}</p>
+        <p className="hero__tagline">{site.tagline} tag</p>
       </div>
     </section>
   )

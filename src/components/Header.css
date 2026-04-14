@@ -31,6 +31,32 @@
   color: var(--accent);
 }
 
+.site-header__brand--mark {
+  display: inline-flex;
+  align-items: center;
+  line-height: 1;
+}
+
+.site-header__brand--mark:hover .site-header__mark {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.site-header__mark {
+  width: 2.375rem;
+  height: 2.375rem;
+  border: 1px solid var(--line);
+  border-radius: 0.25rem;
+  display: grid;
+  place-items: center;
+  background: var(--surface);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--muted);
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+
 .site-header__nav ul {
   list-style: none;
   margin: 0;

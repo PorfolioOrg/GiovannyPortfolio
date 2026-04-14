@@ -27,8 +27,14 @@ export function Header() {
       role="banner"
     >
       {/* Hash links + `scroll-behavior` on `html` handle smooth scrolling; `scroll-padding-top` clears the fixed bar */}
-      <a href="#hero" className="site-header__brand">
-        {site.name.split(' ')[0]}
+      <a
+        href="#hero"
+        className="site-header__brand site-header__brand--mark"
+        aria-label={`${site.name} — Home`}
+      >
+        <span className="site-header__mark" aria-hidden="true">
+          GM
+        </span>
       </a>
       <nav className="site-header__nav" aria-label="Primary">
         <ul>

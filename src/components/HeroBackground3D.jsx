@@ -151,10 +151,21 @@ function useFbxHeroMaterials(root) {
 }
 
 /**
+ * Hero mesh on-screen size (after centering) is mainly:
+ * - `useHeroFbxCenterAndUniformScale(..., targetMax)` — largest bbox axis in world units
+ * - `SpinningFBX` → `<primitive scale={...} />` — extra multiplier on that root
+ * Camera `position.z` / `fov` also change how large it reads.
+ */
+const HERO_FBX_BBOX_TARGET = 2.35
+const HERO_ASSET_DISPLAY_SCALE = 4.0
+const HERO_FBX_TARGET_MAX = HERO_FBX_BBOX_TARGET * HERO_ASSET_DISPLAY_SCALE
+const HERO_FBX_PRIMITIVE_SCALE = 1.12
+
+/**
  * Chest-style scenes often have huge floor/wall meshes off the pivot—centering + uniform scale
  * keeps rotation around the visual mass so geometry doesn’t “lunge” into the camera.
  */
-function useHeroFbxCenterAndUniformScale(root, targetMax = 2.35) {
+function useHeroFbxCenterAndUniformScale(root, targetMax = HERO_FBX_TARGET_MAX) {
   useLayoutEffect(() => {
     if (!root || root.userData.heroFbxLayout) return undefined
 
@@ -184,9 +195,32 @@ function useHeroFbxCenterAndUniformScale(root, targetMax = 2.35) {
 }
 
 /** World-space Y before applying the screen-pixel nudge below. */
-const HERO_MODEL_BASE_Y = -0.92
+const HERO_MODEL_BASE_Y = -0.62
 /** Extra downward shift on screen, in CSS pixels (converted via camera + canvas size). */
-const HERO_NUDGE_DOWN_PX = 14
+const HERO_NUDGE_DOWN_PX = 10
+/** Below this canvas width (px), add lift so the model stays visually centered (portrait heroes read “low”). */
+const HERO_NARROW_MAX_WIDTH = 768
+/** Matches Hero.css desktop split — nudge rig up with the tightened hero padding. */
+const HERO_DESKTOP_SPLIT_MIN_WIDTH = 960
+/** Nudge model up by this fraction of visible world height (0.05 = 5%). */
+const HERO_ASSET_VIEWPORT_LIFT_FRAC = 0.05
+/**
+ * On narrow/tall canvases the same base Y often leaves the mesh clipped at the bottom; nudge up in world units.
+ * Scales with portrait ratio so long phones get a bit more lift than squat tablets in portrait.
+ */
+function heroMobilePortraitLift(widthPx, heightPx) {
+  if (widthPx >= HERO_NARROW_MAX_WIDTH) return 0
+  const w = Math.max(widthPx, 1)
+  const h = Math.max(heightPx, 1)
+  const portrait = h / w
+  const extra = Math.max(0, portrait - 1.2)
+  return 0.62 + Math.min(extra * 0.38, 1.15)
+}
+
+function heroDesktopSplitLift(widthPx) {
+  if (widthPx < HERO_DESKTOP_SPLIT_MIN_WIDTH) return 0
+  return 0.38
+}
 
 function useHeroModelGroupY() {
   const { camera, size } = useThree()
@@ -194,9 +228,14 @@ function useHeroModelGroupY() {
     const vFov = (camera.fov * Math.PI) / 180
     const visibleHeight =
       2 * Math.tan(vFov / 2) * Math.abs(camera.position.z)
-    const worldUnitsPerPixel = visibleHeight / size.height
-    return HERO_MODEL_BASE_Y - HERO_NUDGE_DOWN_PX * worldUnitsPerPixel
-  }, [camera.fov, camera.position.z, size.height])
+    const h = Math.max(size.height, 1)
+    const worldUnitsPerPixel = visibleHeight / h
+    let y = HERO_MODEL_BASE_Y - HERO_NUDGE_DOWN_PX * worldUnitsPerPixel
+    y += heroMobilePortraitLift(size.width, size.height)
+    y += heroDesktopSplitLift(size.width)
+    y += HERO_ASSET_VIEWPORT_LIFT_FRAC * visibleHeight
+    return y
+  }, [camera.fov, camera.position.z, size.height, size.width])
 }
 
 function SpinningPrimitive({ object, scale }) {
@@ -217,13 +256,15 @@ function SpinningPrimitive({ object, scale }) {
 function SpinningFBX({ url }) {
   const fbx = useFBX(url)
   useFbxHeroMaterials(fbx)
-  useHeroFbxCenterAndUniformScale(fbx, 2.35)
-  return <SpinningPrimitive object={fbx} scale={1.12} />
+  useHeroFbxCenterAndUniformScale(fbx, HERO_FBX_TARGET_MAX)
+  return <SpinningPrimitive object={fbx} scale={HERO_FBX_PRIMITIVE_SCALE} />
 }
 
 function SpinningGLTF({ url }) {
   const { scene } = useGLTF(url)
-  return <SpinningPrimitive object={scene} scale={2.2} />
+  return (
+    <SpinningPrimitive object={scene} scale={2.2 * HERO_ASSET_DISPLAY_SCALE} />
+  )
 }
 
 /** Last resort if both FBX and GLB fail (missing file, parse error, etc.) */
@@ -233,10 +274,11 @@ function SpinningPlaceholder() {
   useFrame((_, delta) => {
     if (groupRef.current) groupRef.current.rotation.y += delta * 0.65
   })
+  const s = HERO_ASSET_DISPLAY_SCALE
   return (
     <group ref={groupRef} position={[0, y, 0]}>
       <mesh>
-        <boxGeometry args={[0.85, 1.15, 0.85]} />
+        <boxGeometry args={[0.85 * s, 1.15 * s, 0.85 * s]} />
         <meshStandardMaterial color="#6b7280" roughness={0.55} metalness={0.15} />
       </mesh>
     </group>
