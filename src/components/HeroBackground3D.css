@@ -1,7 +1,10 @@
+/* Fills `.hero__stage`; stage flexbox handles vertical centering of this stack. */
 .hero__bg-wrap {
   position: absolute;
   inset: 0;
   z-index: 0;
+  width: 100%;
+  height: 100%;
   pointer-events: none;
   overflow: hidden;
 }
@@ -10,6 +13,8 @@
   position: absolute;
   inset: 0;
   z-index: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .hero__canvas-gl {
@@ -32,15 +37,6 @@
 }
 
 @media (min-width: 960px) {
-  .hero__bg-wrap {
-    left: auto;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: min(58%, 760px);
-    min-width: 340px;
-  }
-
   .hero__bg-dim {
     background: radial-gradient(
       ellipse 92% 70% at 50% 50%,

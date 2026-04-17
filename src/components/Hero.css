@@ -3,17 +3,40 @@
   overflow: hidden;
   min-height: 100svh;
   display: flex;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   justify-content: center;
-  /* Less top gap under fixed header; extra bottom padding lifts optical center. */
   padding: clamp(3.75rem, 7vh, 4.75rem) clamp(1.25rem, 4vw, 2.5rem)
     clamp(6.5rem, 14vh, 9rem);
   border-bottom: 1px solid var(--line);
 }
 
-.hero__inner {
+/* Copy column: vertically centered in the hero via flex (layout, not Three.js). */
+.hero__foreground {
   position: relative;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 100svh;
+}
+
+/* 3D column: flexbox centers the WebGL layer in the strip (desktop + mobile). */
+.hero__stage {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  /* margin-top: 300px; */
+}
+
+.hero__inner {
+  position: relative;
   text-align: center;
   max-width: 40rem;
 }
@@ -113,12 +136,34 @@
   }
 }
 
-/* Desktop: copy left, 3D panel right (mobile / narrow stays centered). */
+/* Desktop: copy left, 3D stage right — both columns stretch; flex centers content vertically. */
 @media (min-width: 960px) {
   .hero {
+    flex-direction: row;
+    align-items: stretch;
     justify-content: flex-start;
     padding: clamp(3.5rem, 6.5vh, 4.75rem) clamp(1.5rem, 4vw, 2.75rem)
       clamp(6rem, 12vh, 8.5rem) clamp(2rem, 5vw, 4.5rem);
+  }
+
+  .hero__foreground {
+    min-height: 0;
+    flex: 1 1 auto;
+    align-items: flex-start;
+    justify-content: center;
+    align-self: stretch;
+    width: auto;
+  }
+
+  .hero__stage {
+    position: relative;
+    inset: auto;
+    flex: 0 0 min(58%, 760px);
+    max-width: 760px;
+    min-width: 340px;
+    align-self: stretch;
+    height: auto;
+    min-height: 0;
   }
 
   .hero__inner {
