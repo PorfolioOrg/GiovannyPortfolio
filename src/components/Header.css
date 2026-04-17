@@ -58,7 +58,7 @@
   width: 2.375rem;
   height: 2.375rem;
   border: 1px solid var(--header-mark-border);
-  border-radius: 0.25rem;
+  border-radius: 0.0;
   display: grid;
   place-items: center;
   background: var(--header-mark-bg);
@@ -91,7 +91,7 @@
   color: var(--header-muted);
   text-decoration: none;
   padding: 0.5rem 0.9rem;
-  border-radius: 0.375rem;
+  border-radius: 0.0;
   transition: background-color 0.2s ease, color 0.2s ease;
 }
 

@@ -2,7 +2,7 @@
 
 export const site = {
   name: 'Giovanny Blanco',
-  tagline: 'Graphic design roots · Web development focus',
+  tagline: '3D/2D Multimedia Artist',
 }
 
 export const navLinks = [

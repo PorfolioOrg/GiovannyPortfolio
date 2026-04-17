@@ -16,7 +16,7 @@ export function Hero() {
         <h1 id="hero-title" className="hero__name">
           {site.name}
         </h1>
-        <p className="hero__tagline">{site.tagline} tag</p>
+        <p className="hero__tagline">{site.tagline}</p>
       </div>
     </section>
   )
