@@ -1,14 +1,22 @@
 import { Component, Suspense, useLayoutEffect, useMemo, useRef } from 'react'
-import { Canvas, useFrame, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import { useFBX, useGLTF } from '@react-three/drei'
 import {
   ACESFilmicToneMapping,
   Box3,
   Color,
   MeshStandardMaterial,
+  PMREMGenerator,
   SRGBColorSpace,
+  TextureLoader,
   Vector3,
 } from 'three'
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
+import {
+  applyWayfinderPbrToFbxRoot,
+  getWayfinderHeroTextureUrls,
+  splitWayfinderTextureArray,
+} from '../lib/heroWayfinderPbr'
 import './HeroBackground3D.css'
 
 /**
@@ -39,115 +47,18 @@ const HERO_FBX_URL = FBX_FROM_ASSETS || publicAssetUrl('models/Wayfinder.fbx')
 /** Only used if the FBX fails to load (missing file, parse error, etc.) */
 const FALLBACK_GLTF_URL = publicAssetUrl('models/duck.glb')
 
-/** Fallback PBR tints when textures are missing (matches cool UI palette). */
-const FBX_FALLBACK_COLORS = ['#a3a3a3', '#737373', '#d4d4d4']
-
-function detachMapsForDispose(material) {
-  if (!material) return
-  const keys = [
-    'map',
-    'normalMap',
-    'roughnessMap',
-    'metalnessMap',
-    'aoMap',
-    'emissiveMap',
-    'bumpMap',
-    'displacementMap',
-  ]
-  keys.forEach((k) => {
-    material[k] = null
-  })
+function useHeroWayfinderTextureSets() {
+  const urls = useMemo(() => getWayfinderHeroTextureUrls(), [])
+  const loaded = useLoader(TextureLoader, urls)
+  return useMemo(() => splitWayfinderTextureArray(loaded), [loaded])
 }
 
-function disposeMaterial(material) {
-  if (!material) return
-  detachMapsForDispose(material)
-  material.dispose?.()
-}
-
-/**
- * FBX often loads as flat gray (missing textures, Phong/Lambert only). Upgrade to MeshStandardMaterial:
- * keep maps when present; otherwise assign a simple PBR material so lighting reads clearly.
- */
-function useFbxHeroMaterials(root) {
+function useApplyWayfinderPbr(fbx, textureSets) {
   useLayoutEffect(() => {
-    if (!root) return undefined
-    if (root.userData.heroMaterialsNormalized) return undefined
-    root.userData.heroMaterialsNormalized = true
-
-    let meshIndex = 0
-    root.traverse((obj) => {
-      if (!obj.isMesh) return
-      obj.frustumCulled = false
-
-      const prev = obj.material
-      const list = Array.isArray(prev) ? prev : [prev]
-      const next = list.map((old, i) => {
-        if (!old) {
-          const c = new Color(FBX_FALLBACK_COLORS[meshIndex % FBX_FALLBACK_COLORS.length])
-          return new MeshStandardMaterial({
-            color: c,
-            emissive: c,
-            emissiveIntensity: 0.12,
-            metalness: 0.12,
-            roughness: 0.76,
-          })
-        }
-
-        const hasVertexColors = Boolean(old.vertexColors)
-        const map = old.map
-        const hasMap = Boolean(map?.image || map?.source?.data)
-
-        if (hasVertexColors) {
-          disposeMaterial(old)
-          return new MeshStandardMaterial({
-            vertexColors: true,
-            color: 0xffffff,
-            metalness: 0.08,
-            roughness: 0.74,
-          })
-        }
-
-        if (hasMap) {
-          const neo = new MeshStandardMaterial({
-            map,
-            color: old.color?.clone() ?? new Color(0xffffff),
-            roughness:
-              typeof old.roughness === 'number' ? old.roughness : 0.68,
-            metalness:
-              typeof old.metalness === 'number' ? old.metalness : 0.12,
-            normalMap: old.normalMap || null,
-            aoMap: old.aoMap || null,
-            emissiveMap: old.emissiveMap || null,
-            emissive: old.emissive?.clone?.() ?? new Color(0x000000),
-            emissiveIntensity: old.emissiveIntensity ?? 0,
-            transparent: old.transparent,
-            opacity: old.opacity ?? 1,
-            side: old.side,
-          })
-          detachMapsForDispose(old)
-          old.dispose?.()
-          return neo
-        }
-
-        disposeMaterial(old)
-        const pick =
-          FBX_FALLBACK_COLORS[(meshIndex + i) % FBX_FALLBACK_COLORS.length]
-        return new MeshStandardMaterial({
-          color: new Color(pick),
-          emissive: new Color(pick),
-          emissiveIntensity: 0.12,
-          metalness: 0.1,
-          roughness: 0.78,
-        })
-      })
-
-      obj.material = next.length === 1 ? next[0] : next
-      meshIndex += 1
-    })
-
+    if (!fbx || !textureSets?.pendant?.map) return undefined
+    applyWayfinderPbrToFbxRoot(fbx, textureSets)
     return undefined
-  }, [root])
+  }, [fbx, textureSets])
 }
 
 /**
@@ -263,7 +174,8 @@ function SpinningPrimitive({ object, scale }) {
 
 function SpinningFBX({ url }) {
   const fbx = useFBX(url)
-  useFbxHeroMaterials(fbx)
+  const textureSets = useHeroWayfinderTextureSets()
+  useApplyWayfinderPbr(fbx, textureSets)
   useHeroFbxCenterAndUniformScale(fbx, HERO_FBX_TARGET_MAX)
   return <SpinningPrimitive object={fbx} scale={HERO_FBX_PRIMITIVE_SCALE} />
 }
@@ -317,6 +229,34 @@ class ModelErrorBoundary extends Component {
   }
 }
 
+/**
+ * Subtle indoor IBL for MeshStandard reflections (RoomEnvironment + PMREM).
+ * No shadows, single PMREM bake — tuned for a background canvas.
+ */
+function HeroEnvironmentIbl() {
+  const { gl, scene } = useThree()
+
+  useLayoutEffect(() => {
+    const pmrem = new PMREMGenerator(gl)
+    const envScene = new RoomEnvironment()
+    const rt = pmrem.fromScene(envScene)
+    const prevEnv = scene.environment
+    const prevIntensity = scene.environmentIntensity
+
+    scene.environment = rt.texture
+    scene.environmentIntensity = 0.72
+
+    return () => {
+      scene.environment = prevEnv ?? null
+      scene.environmentIntensity = prevIntensity ?? 1
+      rt.texture.dispose()
+      pmrem.dispose()
+    }
+  }, [gl, scene])
+
+  return null
+}
+
 function HeroModel() {
   return (
     <ModelErrorBoundary
@@ -339,23 +279,31 @@ function HeroModel() {
 function Scene() {
   return (
     <>
-      {/* Dark-site lighting: soft fill + keyed rim; intensities kept moderate to avoid a flat/washed look */}
-      <ambientLight intensity={0.48} />
+      <HeroEnvironmentIbl />
+      {/* Lit for camera-facing hero FBX (+Z camera): key from same side, fill from left, soft sky/ground. */}
+      <ambientLight intensity={0.58} />
       <hemisphereLight
-        skyColor="#525252"
-        groundColor="#171717"
-        intensity={0.55}
+        skyColor="#9a9a9a"
+        groundColor="#2a2a2a"
+        intensity={0.62}
       />
+      {/* Key: above/behind camera toward origin — lights faces you see on screen */}
       <directionalLight
-        position={[6, 10, 5]}
-        intensity={1.05}
-        color="#f5f5f5"
+        position={[0.5, 5.5, 13.5]}
+        intensity={1.22}
+        color="#faf8f5"
         castShadow={false}
       />
       <directionalLight
-        position={[-5, 4, -5]}
-        intensity={0.38}
-        color="#a3a3a3"
+        position={[-9, 3.5, 6]}
+        intensity={0.48}
+        color="#dce6f0"
+        castShadow={false}
+      />
+      <directionalLight
+        position={[7, 1.5, 4]}
+        intensity={0.28}
+        color="#e8e4e0"
         castShadow={false}
       />
       <HeroModel />
@@ -382,13 +330,13 @@ export function HeroBackground3D() {
             onCreated={({ gl }) => {
               gl.outputColorSpace = SRGBColorSpace
               gl.toneMapping = ACESFilmicToneMapping
-              gl.toneMappingExposure = 0.98
+              gl.toneMappingExposure = 0.96
               if (import.meta.env.DEV) {
                 // eslint-disable-next-line no-console
                 console.info('[HeroBackground3D] FBX URL:', HERO_FBX_URL)
               }
             }}
-            dpr={[1, 1.75]}
+            dpr={[1, 1.5]}
           >
             <Scene />
           </Canvas>
