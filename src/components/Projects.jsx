@@ -14,9 +14,12 @@ export function Projects() {
         />
         <ul className="projects__list">
           {projects.map((p) => (
-            <li key={p.title}>
-              <article
+            <li key={p.url}>
+              <a
+                href={p.url}
                 className="project-card"
+                target="_blank"
+                rel="noopener noreferrer"
                 style={{ '--project-hover-glow': p.hoverGlow }}
               >
                 <h3 className="project-card__title">{p.title}</h3>
@@ -26,7 +29,8 @@ export function Projects() {
                     <li key={tech}>{tech}</li>
                   ))}
                 </ul>
-              </article>
+                <span className="project-card__cta">View on itch.io →</span>
+              </a>
             </li>
           ))}
         </ul>

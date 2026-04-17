@@ -55,26 +55,12 @@ export const artPieces = [
 
 export const projects = [
   {
-    title: 'Portfolio v1',
+    title: 'Mad Teleport',
+    url: 'https://enriqueparis.itch.io/madteleport',
     description:
-      'Single-page portfolio with scroll-driven navigation and a minimal typographic system.',
-    stack: ['React', 'Vite', 'CSS'],
-    /** Hover glow only (Projects card shadow); grayscale. */
+      'Game Off 2020 entry: a mad-scientist platformer shooter where you throw a Moon Ball and teleport to it—shoot, jump, and survive the lab.',
+    stack: ['Godot', 'Game Jam', 'Windows'],
     hoverGlow: '#d4d4d4',
-  },
-  {
-    title: 'Brand microsite',
-    description:
-      'Landing page for a small studio: layout grids, responsive imagery, and motion hints.',
-    stack: ['HTML', 'CSS', 'JavaScript'],
-    hoverGlow: '#9ca3af',
-  },
-  {
-    title: 'UI kit exploration',
-    description:
-      'Component patterns and spacing scale reused across marketing pages.',
-    stack: ['React', 'CSS'],
-    hoverGlow: '#737373',
   },
 ]
 
@@ -107,16 +93,20 @@ export const resumeProfile = {
 /** URLs from résumé / portfolio (see `src/assets/GioResume.pdf`). */
 export const contactSocialLinks = [
   {
+    label: 'GitHub',
+    href: 'https://github.com/orgs/PorfolioOrg/people/Reovez',
+  },
+  {
     label: 'LinkedIn',
     href: 'https://www.linkedin.com/in/giovanny-blanco-b86234198',
   },
   {
-    label: 'GitHub',
-    href: 'https://github.com/orgs/PorfolioOrg/people/Reovez',
+    label: 'ArtStation',
+    href: 'https://www.artstation.com/reovez',
   },
 ]
 
 export const contact = {
-  email: 'Throw2009@hotmail.com',
+  email: 'giovannyb.tcxr@gmail.com',
   social: contactSocialLinks,
 }

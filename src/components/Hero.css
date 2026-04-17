@@ -31,12 +31,56 @@
 
 .hero__tagline {
   margin: 0;
-  margin-left:10px;
+  margin-left: 10px;
   font-size: 1.0625rem;
   line-height: 1.55;
   color: var(--muted);
   opacity: 0;
   animation: hero-tagline-in 0.72s cubic-bezier(0.22, 1, 0.36, 1) 0.92s forwards;
+}
+
+.hero__social {
+  margin-top: 1.5rem;
+  /* Match .hero__tagline horizontal inset so links line up with copy. */
+  margin-left: 10px;
+  opacity: 0;
+  animation: hero-social-in 0.68s cubic-bezier(0.22, 1, 0.36, 1) 1.15s forwards;
+}
+
+.hero__social ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.65rem 1.35rem;
+  justify-content: center;
+}
+
+.hero__social a {
+  font-size: 0.9375rem;
+  font-weight: 500;
+  color: var(--muted);
+  text-decoration: none;
+  border-bottom: 1px solid transparent;
+  padding-bottom: 0.1rem;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+
+.hero__social a:hover {
+  color: var(--fg);
+  border-bottom-color: var(--line);
+}
+
+@keyframes hero-social-in {
+  from {
+    opacity: 0;
+    transform: translate3d(0, 0.5rem, 0);
+  }
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
 }
 
 @keyframes hero-name-in {
@@ -61,7 +105,8 @@
 
 @media (prefers-reduced-motion: reduce) {
   .hero__name,
-  .hero__tagline {
+  .hero__tagline,
+  .hero__social {
     animation: none;
     opacity: 1;
     transform: none;
@@ -81,5 +126,9 @@
     max-width: min(36rem, 42vw);
     margin-left: 0;
     margin-right: auto;
+  }
+
+  .hero__social ul {
+    justify-content: flex-start;
   }
 }
