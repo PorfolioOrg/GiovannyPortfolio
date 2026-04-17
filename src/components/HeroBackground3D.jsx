@@ -12,7 +12,7 @@ import {
 import './HeroBackground3D.css'
 
 /**
- * FBX from `src/assets` (bundled URL) takes priority; otherwise `public/models/Jug1.fbx`.
+ * FBX from `src/assets` (bundled URL) takes priority; otherwise `public/models/Wayfinder.fbx`.
  * Vite must treat `.fbx` as a static asset — see `assetsInclude` in `vite.config.js`.
  */
 function publicAssetUrl(relativePath) {
@@ -35,12 +35,12 @@ const fbxAssetMap = {
   }),
 }
 const FBX_FROM_ASSETS = Object.values(fbxAssetMap)[0] ?? null
-const HERO_FBX_URL = FBX_FROM_ASSETS || publicAssetUrl('models/Jug1.fbx')
+const HERO_FBX_URL = FBX_FROM_ASSETS || publicAssetUrl('models/Wayfinder.fbx')
 /** Only used if the FBX fails to load (missing file, parse error, etc.) */
 const FALLBACK_GLTF_URL = publicAssetUrl('models/duck.glb')
 
 /** Fallback PBR tints when textures are missing (matches cool UI palette). */
-const FBX_FALLBACK_COLORS = ['#7eb8e8', '#6aa8d8', '#8dc6ff']
+const FBX_FALLBACK_COLORS = ['#a3a3a3', '#737373', '#d4d4d4']
 
 function detachMapsForDispose(material) {
   if (!material) return
@@ -194,16 +194,22 @@ function useHeroFbxCenterAndUniformScale(root, targetMax = HERO_FBX_TARGET_MAX) 
   }, [root, targetMax])
 }
 
-/** World-space Y before applying the screen-pixel nudge below. */
+/** World-space Y before applying the screen-pixel nudge below (narrow / stacked hero). */
 const HERO_MODEL_BASE_Y = -0.62
+/** Extra downward shift: fraction of |HERO_MODEL_BASE_Y| (narrow layouts only). */
+const HERO_MODEL_PUSH_DOWN_FRAC = 0.5
 /** Extra downward shift on screen, in CSS pixels (converted via camera + canvas size). */
-const HERO_NUDGE_DOWN_PX = 10
+const HERO_NUDGE_DOWN_PX = 12
 /** Below this canvas width (px), add lift so the model stays visually centered (portrait heroes read “low”). */
 const HERO_NARROW_MAX_WIDTH = 768
-/** Matches Hero.css desktop split — nudge rig up with the tightened hero padding. */
+/** Matches Hero.css desktop split — copy left, 3D panel right from this width up. */
 const HERO_DESKTOP_SPLIT_MIN_WIDTH = 960
 /** Nudge model up by this fraction of visible world height (0.05 = 5%). */
 const HERO_ASSET_VIEWPORT_LIFT_FRAC = 0.05
+/** Desktop: rig bbox is already centered — keep group near Y=0 to match flex-centered hero copy. */
+const HERO_DESKTOP_MODEL_BASE_Y = 0
+/** Desktop: slight lift so the mesh lines up with the optical center of the padded hero. */
+const HERO_DESKTOP_OPTICAL_LIFT_FRAC = 0.028
 /**
  * On narrow/tall canvases the same base Y often leaves the mesh clipped at the bottom; nudge up in world units.
  * Scales with portrait ratio so long phones get a bit more lift than squat tablets in portrait.
@@ -217,11 +223,6 @@ function heroMobilePortraitLift(widthPx, heightPx) {
   return 0.62 + Math.min(extra * 0.38, 1.15)
 }
 
-function heroDesktopSplitLift(widthPx) {
-  if (widthPx < HERO_DESKTOP_SPLIT_MIN_WIDTH) return 0
-  return 0.38
-}
-
 function useHeroModelGroupY() {
   const { camera, size } = useThree()
   return useMemo(() => {
@@ -230,10 +231,17 @@ function useHeroModelGroupY() {
       2 * Math.tan(vFov / 2) * Math.abs(camera.position.z)
     const h = Math.max(size.height, 1)
     const worldUnitsPerPixel = visibleHeight / h
+
+    if (size.width >= HERO_DESKTOP_SPLIT_MIN_WIDTH) {
+      let y = HERO_DESKTOP_MODEL_BASE_Y
+      y += HERO_DESKTOP_OPTICAL_LIFT_FRAC * visibleHeight
+      return y
+    }
+
     let y = HERO_MODEL_BASE_Y - HERO_NUDGE_DOWN_PX * worldUnitsPerPixel
     y += heroMobilePortraitLift(size.width, size.height)
-    y += heroDesktopSplitLift(size.width)
     y += HERO_ASSET_VIEWPORT_LIFT_FRAC * visibleHeight
+    y -= HERO_MODEL_PUSH_DOWN_FRAC * Math.abs(HERO_MODEL_BASE_Y)
     return y
   }, [camera.fov, camera.position.z, size.height, size.width])
 }
@@ -334,20 +342,20 @@ function Scene() {
       {/* Dark-site lighting: soft fill + keyed rim; intensities kept moderate to avoid a flat/washed look */}
       <ambientLight intensity={0.48} />
       <hemisphereLight
-        skyColor="#34495e"
-        groundColor="#22313f"
+        skyColor="#525252"
+        groundColor="#171717"
         intensity={0.55}
       />
       <directionalLight
         position={[6, 10, 5]}
         intensity={1.05}
-        color="#e4f1fe"
+        color="#f5f5f5"
         castShadow={false}
       />
       <directionalLight
         position={[-5, 4, -5]}
         intensity={0.38}
-        color="#8dc6ff"
+        color="#a3a3a3"
         castShadow={false}
       />
       <HeroModel />

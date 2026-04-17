@@ -43,7 +43,7 @@
 
   .hero__bg-dim {
     background: radial-gradient(
-      ellipse 95% 68% at 56% 46%,
+      ellipse 92% 70% at 50% 50%,
       color-mix(in srgb, var(--bg) 16%, transparent) 0%,
       color-mix(in srgb, var(--bg) 74%, transparent) 64%,
       color-mix(in srgb, var(--bg) 95%, transparent) 100%

@@ -1,7 +1,7 @@
 /** Central copy + lists so sections stay presentational and easy to edit. */
 
 export const site = {
-  name: 'Giovanny Machado',
+  name: 'Giovanny Blanco',
   tagline: 'Graphic design roots · Web development focus',
 }
 
@@ -59,22 +59,22 @@ export const projects = [
     description:
       'Single-page portfolio with scroll-driven navigation and a minimal typographic system.',
     stack: ['React', 'Vite', 'CSS'],
-    /** Hover glow only (Projects card shadow); matches cool UI palette. */
-    hoverGlow: '#8dc6ff',
+    /** Hover glow only (Projects card shadow); grayscale. */
+    hoverGlow: '#d4d4d4',
   },
   {
     title: 'Brand microsite',
     description:
       'Landing page for a small studio: layout grids, responsive imagery, and motion hints.',
     stack: ['HTML', 'CSS', 'JavaScript'],
-    hoverGlow: 'red',
+    hoverGlow: '#9ca3af',
   },
   {
     title: 'UI kit exploration',
     description:
       'Component patterns and spacing scale reused across marketing pages.',
     stack: ['React', 'CSS'],
-    hoverGlow: 'teal',
+    hoverGlow: '#737373',
   },
 ]
 

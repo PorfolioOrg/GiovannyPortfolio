@@ -1,15 +1,12 @@
 /* Design tokens: one place for color, type scale, and layout width. */
 :root {
-  /*
-   * Custom palette:
-   * #e4f1fe · #8dc6ff · #22313f · #34495e
-   */
-  --bg: #22313f;
-  --surface: #34495e;
-  --fg: #e4f1fe;
-  --muted: #a8c5dc;
-  --line: #3d5666;
-  --accent: #8dc6ff;
+  /* Grayscale (dark UI): black, white, and neutral steps only. */
+  --bg: #121212;
+  --surface: #1f1f1f;
+  --fg: #f5f5f5;
+  --muted: #a3a3a3;
+  --line: #3a3a3a;
+  --accent: #e5e5e5;
   --max: 68rem;
   color-scheme: dark;
   font-family: 'Inter', system-ui, sans-serif;
