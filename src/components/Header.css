@@ -49,24 +49,17 @@
   line-height: 1;
 }
 
-.site-header__brand--mark:hover .site-header__mark {
-  border-color: #000000;
-  color: #000000;
+.site-header__brand--mark:hover .site-header__logo {
+  opacity: 0.88;
 }
 
-.site-header__mark {
-  width: 2.375rem;
-  height: 2.375rem;
-  border: 1px solid var(--header-mark-border);
-  border-radius: 0.0;
-  display: grid;
-  place-items: center;
-  background: var(--header-mark-bg);
-  font-size: 0.6875rem;
-  font-weight: 600;
-  letter-spacing: 0.06em;
-  color: var(--header-mark-fg);
-  transition: border-color 0.2s ease, color 0.2s ease;
+.site-header__logo {
+  display: block;
+  height: clamp(1.75rem, 4.5vw, 2.375rem);
+  width: auto;
+  max-width: min(11rem, 42vw);
+  object-fit: contain;
+  transition: opacity 0.2s ease;
 }
 
 .site-header__nav {

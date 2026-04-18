@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react'
 import { useScrollDirection } from '../hooks/useScrollDirection'
 import { navLinks, site } from '../data/siteContent'
+import siteLogoUrl from '../assets/StudioBlanKoLogo.jpg'
 import './Header.css'
 
 function IconMenu() {
@@ -76,9 +77,12 @@ export function Header() {
         className="site-header__brand site-header__brand--mark"
         aria-label={`${site.name} — Home`}
       >
-        <span className="site-header__mark" aria-hidden="true">
-          GM
-        </span>
+        <img
+          className="site-header__logo"
+          src={siteLogoUrl}
+          alt=""
+          decoding="async"
+        />
       </a>
       <nav className="site-header__nav site-header__nav--desktop" aria-label="Primary">
         <ul>
