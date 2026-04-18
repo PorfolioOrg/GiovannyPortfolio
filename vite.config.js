@@ -7,8 +7,7 @@ const GH_PAGES_BASE = '/GiovannyPortfolio/'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
-  // base: mode === 'production' ? GH_PAGES_BASE : '/',
-  base: '/',
+  base: mode === 'production' ? GH_PAGES_BASE : '/',
   plugins: [react()],
   /** So `import '…/file.fbx?url'` works from `src/assets` */
   assetsInclude: ['**/*.fbx', '**/*.FBX', '**/*.pdf'],
