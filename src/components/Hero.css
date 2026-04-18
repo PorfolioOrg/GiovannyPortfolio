@@ -42,6 +42,7 @@
 }
 
 .hero__name {
+  font-family: var(--font-section-title);
   font-size: clamp(2.25rem, 6vw, 3.5rem);
   font-weight: 600;
   letter-spacing: -0.03em;

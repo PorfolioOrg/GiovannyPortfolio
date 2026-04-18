@@ -8,6 +8,8 @@
   --line: #3a3a3a;
   --accent: #e5e5e5;
   --max: 68rem;
+  /* Hero name + main section titles (Century Gothic is common on Windows; fallbacks elsewhere). */
+  --font-section-title: 'Century Gothic', CenturyGothic, 'Trebuchet MS', 'Gill Sans', sans-serif;
   color-scheme: dark;
   font-family: 'Inter', system-ui, sans-serif;
   line-height: 1.5;
