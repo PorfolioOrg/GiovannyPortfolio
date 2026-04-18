@@ -1,27 +1,20 @@
 import { Component, Suspense, useLayoutEffect, useMemo, useRef } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
-import { useFBX, useGLTF } from '@react-three/drei'
+import { useGLTF } from '@react-three/drei'
 import {
   ACESFilmicToneMapping,
   Box3,
-  Color,
   MeshStandardMaterial,
   PMREMGenerator,
   SRGBColorSpace,
-  TextureLoader,
   Vector3,
 } from 'three'
+import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js'
-import {
-  applyWayfinderPbrToFbxRoot,
-  getWayfinderHeroTextureUrls,
-  splitWayfinderTextureArray,
-} from '../lib/heroWayfinderPbr'
 import './HeroBackground3D.css'
 
 /**
- * FBX from `src/assets` (bundled URL) takes priority; otherwise `public/models/Wayfinder.fbx`.
- * Vite must treat `.fbx` as a static asset — see `assetsInclude` in `vite.config.js`.
+ * Hero GLB from `public/models/Pendent.glb` (respects `import.meta.env.BASE_URL` for GitHub Pages).
  */
 function publicAssetUrl(relativePath) {
   const base = import.meta.env.BASE_URL.endsWith('/')
@@ -30,36 +23,17 @@ function publicAssetUrl(relativePath) {
   return `${base}${relativePath.replace(/^\//, '')}`
 }
 
-const fbxAssetMap = {
-  ...import.meta.glob('../assets/*.fbx', {
-    eager: true,
-    query: '?url',
-    import: 'default',
-  }),
-  ...import.meta.glob('../assets/*.FBX', {
+const glbAssetMap = {
+  ...import.meta.glob('../assets/*.glb', {
     eager: true,
     query: '?url',
     import: 'default',
   }),
 }
-const FBX_FROM_ASSETS = Object.values(fbxAssetMap)[0] ?? null
-const HERO_FBX_URL = FBX_FROM_ASSETS || publicAssetUrl('models/Wayfinder.fbx')
-/** Only used if the FBX fails to load (missing file, parse error, etc.) */
+const GLB_FROM_ASSETS = Object.values(glbAssetMap)[0] ?? null
+const HERO_GLB_URL = GLB_FROM_ASSETS || publicAssetUrl('models/Pendent.glb')
+/** Only used if the hero GLB fails to load (missing file, parse error, etc.) */
 const FALLBACK_GLTF_URL = publicAssetUrl('models/duck.glb')
-
-function useHeroWayfinderTextureSets() {
-  const urls = useMemo(() => getWayfinderHeroTextureUrls(), [])
-  const loaded = useLoader(TextureLoader, urls)
-  return useMemo(() => splitWayfinderTextureArray(loaded), [loaded])
-}
-
-function useApplyWayfinderPbr(fbx, textureSets) {
-  useLayoutEffect(() => {
-    if (!fbx || !textureSets?.pendant?.map) return undefined
-    applyWayfinderPbrToFbxRoot(fbx, textureSets)
-    return undefined
-  }, [fbx, textureSets])
-}
 
 /**
  * On-screen size is driven by uniform bbox scaling + primitive scale.
@@ -95,7 +69,6 @@ function useHeroFbxCenterAndUniformScale(root, targetMax = HERO_FBX_TARGET_MAX) 
     const maxDim = Math.max(size.x, size.y, size.z, 0)
     const scale = targetMax / maxDim
 
-    // reset first (IMPORTANT)
     root.position.set(0, 0, 0)
     root.scale.setScalar(scale)
 
@@ -124,12 +97,12 @@ function SpinningPrimitive({ object, scale }) {
   )
 }
 
-function SpinningFBX({ url }) {
-  const fbx = useFBX(url)
-  const textureSets = useHeroWayfinderTextureSets()
-  useApplyWayfinderPbr(fbx, textureSets)
-  useHeroFbxCenterAndUniformScale(fbx, HERO_FBX_TARGET_MAX)
-  return <SpinningPrimitive object={fbx} scale={HERO_FBX_PRIMITIVE_SCALE} />
+/** Hero pendant: load with GLTFLoader, clone scene so layout math does not mutate the loader cache. */
+function SpinningHeroGlb({ url }) {
+  const gltf = useLoader(GLTFLoader, url)
+  const root = useMemo(() => gltf.scene.clone(true), [gltf])
+  useHeroFbxCenterAndUniformScale(root, HERO_FBX_TARGET_MAX)
+  return <SpinningPrimitive object={root} scale={HERO_FBX_PRIMITIVE_SCALE} />
 }
 
 function SpinningGLTF({ url }) {
@@ -139,7 +112,7 @@ function SpinningGLTF({ url }) {
   )
 }
 
-/** Last resort if both FBX and GLB fail (missing file, parse error, etc.) */
+/** Last resort if hero GLB and fallback GLB fail (missing file, parse error, etc.) */
 function SpinningPlaceholder() {
   const groupRef = useRef(null)
   useFrame((_, delta) => {
@@ -170,7 +143,7 @@ class ModelErrorBoundary extends Component {
     console.warn(
       `[HeroBackground3D] ${this.props.label ?? 'model'} load failed:`,
       error?.message ?? error,
-      import.meta.env.DEV ? `(url: ${HERO_FBX_URL})` : '',
+      import.meta.env.DEV ? `(url: ${HERO_GLB_URL})` : '',
     )
   }
 
@@ -211,7 +184,7 @@ function HeroEnvironmentIbl() {
 function HeroModel() {
   return (
     <ModelErrorBoundary
-      label="FBX"
+      label="Hero GLB"
       fallback={
         <Suspense fallback={null}>
           <ModelErrorBoundary label="GLTF fallback" fallback={<SpinningPlaceholder />}>
@@ -221,7 +194,7 @@ function HeroModel() {
       }
     >
       <Suspense fallback={null}>
-        <SpinningFBX url={HERO_FBX_URL} />
+        <SpinningHeroGlb url={HERO_GLB_URL} />
       </Suspense>
     </ModelErrorBoundary>
   )
@@ -231,14 +204,13 @@ function Scene() {
   return (
     <>
       <HeroEnvironmentIbl />
-      {/* Lit for camera-facing hero FBX (+Z camera): key from same side, fill from left, soft sky/ground. */}
+      {/* Lit for camera-facing hero model (+Z camera): key from same side, fill from left, soft sky/ground. */}
       <ambientLight intensity={0.58} />
       <hemisphereLight
         skyColor="#9a9a9a"
         groundColor="#2a2a2a"
         intensity={0.62}
       />
-      {/* Key: above/behind camera toward origin — lights faces you see on screen */}
       <directionalLight
         position={[0.5, 5.5, 13.5]}
         intensity={1.22}
@@ -289,7 +261,7 @@ export function HeroBackground3D() {
               gl.toneMappingExposure = 0.96
               if (import.meta.env.DEV) {
                 // eslint-disable-next-line no-console
-                console.info('[HeroBackground3D] FBX URL:', HERO_FBX_URL)
+                console.info('[HeroBackground3D] Hero GLB URL:', HERO_GLB_URL)
               }
             }}
             dpr={[1, 1.5]}
