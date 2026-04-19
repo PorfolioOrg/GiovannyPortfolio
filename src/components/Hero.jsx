@@ -8,7 +8,7 @@ const HeroBackground3D = lazy(() =>
 
 export function Hero() {
   return (
-    <section id="hero" className="hero" aria-labelledby="hero-title">
+    <section id="hero" className="hero section--dark" aria-labelledby="hero-title">
       <div className="hero__foreground">
         <div className="hero__inner">
           <h1 id="hero-title" className="hero__name">

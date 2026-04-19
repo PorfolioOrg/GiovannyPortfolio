@@ -5,7 +5,7 @@ import './Resume.css'
 
 export function Resume() {
   return (
-    <section id="resume" className="resume" aria-labelledby="resume-heading">
+    <section id="resume" className="resume section--light" aria-labelledby="resume-heading">
       <div className="resume__container">
         <SectionHeading
           id="resume-heading"

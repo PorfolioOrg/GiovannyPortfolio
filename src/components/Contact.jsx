@@ -4,7 +4,7 @@ import './Contact.css'
 
 export function Contact() {
   return (
-    <section id="contact" className="contact" aria-labelledby="contact-heading">
+    <section id="contact" className="contact section--dark" aria-labelledby="contact-heading">
       <div className="contact__container">
         <SectionHeading
           id="contact-heading"

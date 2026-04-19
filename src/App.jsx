@@ -6,6 +6,7 @@ import { Resume } from './components/Resume'
 import { Contact } from './components/Contact'
 import { ScrollToTop } from './components/ScrollToTop'
 import './App.css'
+import './sections.css'
 
 function App() {
   return (
