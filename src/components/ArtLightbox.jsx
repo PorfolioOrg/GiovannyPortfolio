@@ -42,7 +42,7 @@ export function ArtLightbox({ piece, onClose }) {
 
   const images =
     piece?.images?.length > 0 ? piece.images : piece?.src ? [piece.src] : []
-
+  
   const goPrev = useCallback(() => {
     if (images.length < 2) return
     setSlideIndex((i) => (i - 1 + images.length) % images.length)
@@ -87,7 +87,12 @@ export function ArtLightbox({ piece, onClose }) {
   const titleId = `art-lightbox-title-${piece.id}`
   const currentSrc = images[slideIndex] ?? images[0]
   const showNav = images.length > 1
+  const descriptionText =
+  typeof piece.description === "string"
+    ? piece.description
+    : piece.description.text;
 
+const links = piece?.links ?? [];
   return createPortal(
     <div
       className="art-lightbox"
@@ -148,9 +153,24 @@ export function ArtLightbox({ piece, onClose }) {
             <h2 id={titleId} className="art-lightbox__title">
               {piece.title}
             </h2>
-            {piece.description ? (
+
+            {/* {piece.description ? (
               <p className="art-lightbox__desc">{piece.description}</p>
-            ) : null}
+            ) : null} */}
+            {piece.description ? (
+              <div className="art-lightbox__desc">
+                 <p>
+                  {descriptionText}
+                  {links.map((link, i) => (
+  <a key={i} href={link.url} target='_blank'>
+    {link.label}
+  </a>
+))}
+                  </p>
+
+
+</div>
+) : null}
             {showNav ? (
               <p className="art-lightbox__counter" aria-live="polite">
                 {slideIndex + 1} / {images.length}

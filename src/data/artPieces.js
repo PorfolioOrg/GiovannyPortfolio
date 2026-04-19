@@ -5,46 +5,52 @@
 const FOLDER_CONFIG = [
   {
     id: 'house',
-    title: 'House',
-    previewIndex: 1, 
+    title: 'The Witch\'s House',
+    previewIndex: 0, 
     description:
-      'Environment block-out through final mood: scale, storytelling props, and atmosphere in one set.',
+      'Environmental prop with an stylized cartoon style, made with Autodesk Maya and textured with Adobe Substance. Made with storytelling and atmosphere in mind to make it seem as the old house of a witch. Made using the PBR texture standard.',
   },
   {
     id: 'chest',
-    title: 'Chest',
+    title: 'Fantasy Chest',
     description:
-      'Hard-surface sculpt and render study—material reads, edge flow, and presentation for a hero prop.',
+      'Environmental high fantasy prop, designed with Maya, sculpted with Zbrush, and textured with Adobe Substance. Based on an original artist concept found on Pinterest (https://www.pinterest.com/pin/833869687258225827/). Made with especial care on details and preserving and stylized look and vision of the original artist. Made using the PBR texture standard.',
   },
   {
     id: 'pendant',
-    title: 'Pendant',
+    title: 'Aqua\'s Wayfinder Pendant',
     description:
-      'Small-object focus: reflections, micro-detail, and clean turntable-style framing.',
+      'I made this model in Maya and Textured it with substance painter, the pendant is from the Kingdom Hearts Series. This model was made with reflections, micro detail, and clean Game like design in mind. Model is ready to be implemented into a 3D Game engine or 3d Animation software',
   },
   {
     id: 'potion',
-    title: 'Potion',
+    title: 'Life Potion',
     description:
-      'Glass and liquid look dev—transmission, caustics hints, and label-friendly hero framing.',
-  },
+      'I modeled this fantasy like table and potion in Maya and textured them in Substance. Rendered using Iray. Made with PBR texturing standard.I created the 3D model of the potion based off concept art I found on ',
+      links: [
+        {
+          label: "Pinterest",
+          url: "https://www.pinterest.com/pin/pocion-de-fuerza--515802963572498018/"
+        }
+      ]
+    },
   {
     id: 'creature',
-    title: 'Creature',
+    title: 'Fantasy Creature: Ferrunec',
     description:
-      'Character-focused piece exploring silhouette, surface detail, and lighting for a readable creature read.',
+      'Creature Design study to create a unique Fantasy creature, that seems realistic and believable. This design explores the use of silhouette, surface detail, and lighting for a readable creature image. Especial care was place into making a creature that avoids the Chimera Architype.',
   },
   {
     id: 'spaceCaptain',
-    title: 'Space captain',
+    title: 'It\'s Just the Two of Us...',
     description:
-      'Stylized portrait and costume pass—shape language, decals, and readable focal hierarchy.',
+      'Storytelling SciFi illustration about two individuals trapped in a space vessel. Here we see the POV of a Captain that looks horrified at his subordinate that has just committed a most heinous act. The Captain realizing they are bound to this vessel together and never going back, we see they are getting farther and farther away from earth. But at least they have each other... for better and worse. Illustration made with Clip Studio Paint and Photoshop',
   },
   {
     id: 'witch',
-    title: 'Witch',
+    title: 'Weeba-Lu The Witch',
     description:
-      'Character illustration / render pass—pose, costume storytelling, and contrast against the scene.',
+      'Character illustration made as character design commission for a YouTuber, it features a unique witch character that introduces all the unique features of the YouTuber\'s original character, adding costume and storytelling, with a Halloween theme and high contrast between colors. Illustration made with Procreate and Photoshop',
   },
 ]
 
@@ -77,6 +83,7 @@ function buildPiece(config) {
     id: config.id,
     title: config.title,
     description: config.description,
+    links: config.links,
     src: preview,
     preview,
     images,
