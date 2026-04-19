@@ -38,8 +38,6 @@ html {
 
 body {
   margin: 0;
-  /* Matches hero and dark sections; avoids off-theme gaps at the chrome. */
-  background: #000000;
 }
 
 #root {

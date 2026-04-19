@@ -9,7 +9,7 @@ export function ArtPortfolio() {
   const closeLightbox = useCallback(() => setActivePiece(null), [])
 
   return (
-    <section id="art" className="art section--light" aria-labelledby="art-heading">
+    <section id="art" className="art" aria-labelledby="art-heading">
       <div className="art__container">
         <SectionHeading
           id="art-heading"

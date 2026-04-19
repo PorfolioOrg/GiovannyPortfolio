@@ -4,7 +4,7 @@ import './Projects.css'
 
 export function Projects() {
   return (
-    <section id="projects" className="projects section--dark" aria-labelledby="projects-heading">
+    <section id="projects" className="projects" aria-labelledby="projects-heading">
       <div className="projects__container">
         <SectionHeading
           id="projects-heading"
