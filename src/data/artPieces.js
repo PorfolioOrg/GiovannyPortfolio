@@ -59,6 +59,13 @@ const FOLDER_CONFIG = [
     description:
       'Axel\s weapon',
   },
+  {
+    id: 'legoCar',
+    title: 'lego Car',
+    previewIndex: 0, 
+    description:
+      'inspired by burnout paradise',
+  },
 ]
 
 const FOLDER_GLOBS = {
@@ -73,7 +80,8 @@ const FOLDER_GLOBS = {
     import: 'default',
   }),
   witch: import.meta.glob('../assets/witch/*.webp', { eager: true, query: '?url', import: 'default' }),
-  axel: import.meta.glob('../assets/axel/*.webp',{ eager: true, query: '?url', import: 'default' })
+  axel: import.meta.glob('../assets/axel/*.webp',{ eager: true, query: '?url', import: 'default' }),
+  legoCar: import.meta.glob('../assets/legoCar/*.webp',{ eager: true, query: '?url', import: 'default' }),
 }
 
 function sortedUrls(modules) {
