@@ -52,6 +52,13 @@ const FOLDER_CONFIG = [
     description:
       'Character illustration made as character design commission for a YouTuber, it features a unique witch character that introduces all the unique features of the YouTuber\'s original character, adding costume and storytelling, with a Halloween theme and high contrast between colors. Illustration made with Procreate and Photoshop',
   },
+  {
+    id: 'axel',
+    title: 'Axel\'s Weapon',
+    previewIndex: 0, 
+    description:
+      'Axel\s weapon',
+  },
 ]
 
 const FOLDER_GLOBS = {
@@ -66,6 +73,7 @@ const FOLDER_GLOBS = {
     import: 'default',
   }),
   witch: import.meta.glob('../assets/witch/*.webp', { eager: true, query: '?url', import: 'default' }),
+  axel: import.meta.glob('../assets/axel/*.webp',{ eager: true, query: '?url', import: 'default' })
 }
 
 function sortedUrls(modules) {

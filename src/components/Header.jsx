@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef } from 'react'
 import { useScrollDirection } from '../hooks/useScrollDirection'
 import { navLinks, site } from '../data/siteContent'
-import siteLogoUrl from '../assets/StudioBlanKoLogo.jpg'
+// import siteLogoUrl from '../assets/StudioBlanKoLogo.jpg'
+import siteLogoUrl from '../assets/Logo2Transparent.webp'
 import './Header.css'
 
 function IconMenu() {
