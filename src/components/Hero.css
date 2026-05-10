@@ -1,7 +1,7 @@
 .hero {
   position: relative;
   overflow: hidden;
-  min-height: 100vh;
+  min-height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: stretch;
@@ -20,7 +20,7 @@
   align-items: center;
   justify-content: center;
   width: 100%;
-  min-height: 100vh;
+  min-height: 100svh;
 }
 
 /* 3D column: flexbox centers the WebGL layer in the strip (desktop + mobile). */

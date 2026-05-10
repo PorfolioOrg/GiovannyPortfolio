@@ -57,7 +57,7 @@ export function Header() {
         documentHeight - (currentScrollY + windowHeight)
   
       // Adjust threshold as needed
-      setIsNearFooter(distanceFromBottom < 60)
+      setIsNearFooter(distanceFromBottom < 120)
     }
   
     onScroll()
@@ -95,7 +95,7 @@ export function Header() {
       className={`site-header${hide ? ' site-header--hidden' : ''}${menuOpen ? ' site-header--menu-open' : ''}`}
       role="banner"
     >
-      {/* Hash links + `scroll-behavior` on `html` handle smooth scrolling; `scroll-padding-top` clears the fixed bar */}
+      {/* Hash links: `scroll-behavior` + `scroll-padding-top` on `html` (see `index.css`) clear the fixed bar */}
       <a
         href="#hero"
         className="site-header__brand site-header__brand--mark"

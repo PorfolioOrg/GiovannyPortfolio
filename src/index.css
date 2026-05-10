@@ -1,5 +1,8 @@
 /* Design tokens: one place for color, type scale, and layout width. */
 :root {
+  /* Fixed header block height (keep in sync with `Header.css` `.site-header`). */
+  --site-header-height: calc(2rem + max(2.75rem, clamp(1.75rem, 4.5vw, 2.375rem)) + 1px);
+
   /* Grayscale (dark UI): black, white, and neutral steps only. */
   --bg: #121212;
   --surface: #1f1f1f;
@@ -18,10 +21,10 @@
   -webkit-font-smoothing: antialiased;
 }
 
-/* Smooth in-page jumps; offset for fixed header */
+/* Smooth in-page jumps; `scroll-padding-top` offsets `#` targets for the fixed header. */
 html {
   scroll-behavior: smooth;
-  /* scroll-padding-top: 1.0rem; */
+  scroll-padding-top: var(--site-header-height);
 }
 
 @media (prefers-reduced-motion: reduce) {
