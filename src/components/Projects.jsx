@@ -22,6 +22,7 @@ export function Projects() {
                 rel="noopener noreferrer"
                 style={{ '--project-hover-glow': p.hoverGlow }}
               >
+                <img src={p.image} alt={p.title} className="project-card__image" />
                 <h3 className="project-card__title">{p.title}</h3>
                 <p className="project-card__desc">{p.description}</p>
                 <ul className="project-card__stack" aria-label="Tech stack">

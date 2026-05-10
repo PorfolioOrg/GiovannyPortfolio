@@ -21,7 +21,7 @@
 /* Smooth in-page jumps; offset for fixed header */
 html {
   scroll-behavior: smooth;
-  scroll-padding-top: 5.5rem;
+  /* scroll-padding-top: 1.0rem; */
 }
 
 @media (prefers-reduced-motion: reduce) {

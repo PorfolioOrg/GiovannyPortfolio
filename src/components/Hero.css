@@ -178,3 +178,20 @@
     justify-content: flex-start;
   }
 }
+.hero__logo {
+  width: 290px;
+  height: auto;
+  margin-bottom: -3.2rem;
+
+  opacity: 0;
+  transform: translateY(-10px);
+  animation: logoFadeIn 0.8s ease forwards;
+  animation-delay: 0.2s;
+}
+
+@keyframes logoFadeIn {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

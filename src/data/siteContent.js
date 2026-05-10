@@ -14,7 +14,7 @@ export const navLinks = [
 ]
 
 export { artPieces } from './artPieces.js'
-
+import proj1Img from '../assets/img/Proj1.jpg'
 export const projects = [
   {
     title: 'Mad Teleport',
@@ -23,6 +23,7 @@ export const projects = [
       'Game Off 2020 entry: a mad-scientist platformer shooter where you throw a Moon Ball and teleport to it—shoot, jump, and survive the lab.',
     stack: ['Godot', 'Game Jam', 'Windows'],
     hoverGlow: '#d4d4d4',
+    image: proj1Img,
   },
 ]
 
@@ -72,3 +73,4 @@ export const contact = {
   email: 'giovannyb.tcxr@gmail.com',
   social: contactSocialLinks,
 }
+

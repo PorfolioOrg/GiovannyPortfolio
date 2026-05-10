@@ -1,7 +1,7 @@
 import { lazy, Suspense } from 'react'
 import { contact, site } from '../data/siteContent'
 import './Hero.css'
-
+import siteLogoUrl from '../assets/Logo2Inverted.png'
 const HeroBackground3D = lazy(() =>
   import('./HeroBackground3D').then((mod) => ({ default: mod.HeroBackground3D })),
 )
@@ -11,6 +11,7 @@ export function Hero() {
     <section id="hero" className="hero" aria-labelledby="hero-title">
       <div className="hero__foreground">
         <div className="hero__inner">
+        <img src={siteLogoUrl} alt={`${site.name} logo`}className="hero__logo"/>
           <h1 id="hero-title" className="hero__name">
             {site.name}
           </h1>

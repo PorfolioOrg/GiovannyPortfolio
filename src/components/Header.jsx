@@ -40,11 +40,30 @@ export function Header() {
   const [menuOpen, setMenuOpen] = useState(false)
   const menuButtonRef = useRef(null)
   const closeButtonRef = useRef(null)
-
+  const [isNearFooter, setIsNearFooter] = useState(false)
+  const ignoreScrollRef = useRef(false)
   useEffect(() => {
-    const onScroll = () => setScrollY(window.scrollY)
+    const onScroll = () => {
+      const currentScrollY = window.scrollY
+  
+      setScrollY(currentScrollY)
+  
+      // Detect footer visibility
+      const windowHeight = window.innerHeight
+      const documentHeight = document.documentElement.scrollHeight
+  
+      // Distance from bottom
+      const distanceFromBottom =
+        documentHeight - (currentScrollY + windowHeight)
+  
+      // Adjust threshold as needed
+      setIsNearFooter(distanceFromBottom < 60)
+    }
+  
     onScroll()
+  
     window.addEventListener('scroll', onScroll, { passive: true })
+  
     return () => window.removeEventListener('scroll', onScroll)
   }, [])
 
@@ -63,7 +82,11 @@ export function Header() {
     }
   }, [menuOpen])
 
-  const hide = direction === 'down' && scrollY > 72
+  const hide =
+  direction === 'down' &&
+  scrollY > 72 &&
+  !ignoreScrollRef.current &&
+  !isNearFooter
 
   const closeMenu = () => setMenuOpen(false)
 
@@ -89,7 +112,18 @@ export function Header() {
         <ul>
           {navLinks.map(({ id, label }) => (
             <li key={id}>
-              <a href={`#${id}`}>{label}</a>
+             <a
+  href={`#${id}`}
+  onClick={() => {
+    ignoreScrollRef.current = true
+
+    setTimeout(() => {
+      ignoreScrollRef.current = false
+    }, 1200)
+  }}
+>
+  {label}
+</a>
             </li>
           ))}
         </ul>
@@ -134,9 +168,20 @@ export function Header() {
             <ul>
               {navLinks.map(({ id, label }) => (
                 <li key={id}>
-                  <a href={`#${id}`} onClick={closeMenu}>
-                    {label}
-                  </a>
+              <a
+  href={`#${id}`}
+  onClick={() => {
+    closeMenu()
+
+    ignoreScrollRef.current = true
+
+    setTimeout(() => {
+      ignoreScrollRef.current = false
+    }, 1200)
+  }}
+>
+  {label}
+</a>
                 </li>
               ))}
             </ul>

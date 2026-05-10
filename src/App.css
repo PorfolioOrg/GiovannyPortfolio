@@ -6,3 +6,15 @@
 .app main {
   display: block;
 }
+main > section {
+  min-height: 100vh;
+  /* display: flex;
+  align-items: center; optional but usually improves layout */
+}
+html {
+  scroll-behavior: smooth;
+}
+
+section {
+  scroll-margin-top: 80px; /* adjust to your header height */
+}
