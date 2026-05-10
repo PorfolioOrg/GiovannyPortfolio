@@ -11,7 +11,7 @@ export function Hero() {
     <section id="hero" className="hero" aria-labelledby="hero-title">
       <div className="hero__foreground">
         <div className="hero__inner">
-        <img src={siteLogoUrl} alt={`${site.name} logo`}className="hero__logo"/>
+        <img src={siteLogoUrl} alt={`${site.name} logo`} className="hero__logo" />
           <h1 id="hero-title" className="hero__name">
             {site.name}
           </h1>

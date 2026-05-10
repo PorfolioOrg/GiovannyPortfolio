@@ -16,6 +16,7 @@
     "@react-three/fiber": "^9.5.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "simple-icons": "^16.19.0",
     "three": "^0.183.2"
   },
   "devDependencies": {

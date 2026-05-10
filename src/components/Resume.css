@@ -1,11 +1,71 @@
 .resume {
+  position: relative;
   padding: clamp(4rem, 10vw, 6rem) clamp(1.25rem, 4vw, 2.5rem);
   border-bottom: 1px solid var(--line);
+  /* Desk: subtle depth + copybook-style ruled lines (visible in padding outside the card) */
+  background-color: #e6e3dc;
+  background-image:
+    repeating-linear-gradient(
+      180deg,
+      rgba(52, 48, 42, 0.078) 0 1px,
+      transparent 1px 2.5rem
+    ),
+    linear-gradient(178deg, #ebe8e1 0%, #e4e1d9 55%, #dcd8cf 100%);
+  background-repeat: repeat, no-repeat;
+  background-size: auto, 100% 100%;
+  color: #141414;
+  --fg: #141414;
+  --muted: #525252;
+  --line: #d0ccc2;
+  --surface: #ebe8e0;
+  --bg: #ddd9d0;
+  --accent: #141414;
+  transition: background-color 0.5s ease;
+  overflow: hidden;
+}
+
+/* Film-grain style noise: breaks up flat fills, stays below content. */
+.resume::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.085;
+  mix-blend-mode: multiply;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 256 256'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.7' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
+  background-size: 160px 160px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .resume {
+    transition-duration: 0.01ms;
+  }
 }
 
 .resume__container {
+  position: relative;
+  z-index: 1;
   max-width: var(--max);
   margin: 0 auto;
+  /* Open book / page block */
+  padding: clamp(2.25rem, 5.5vw, 3.25rem) clamp(1.75rem, 5vw, 3rem);
+  border-radius: 2px 3px 3px 2px;
+  border: 1px solid color-mix(in srgb, #5c4d3d 22%, transparent);
+  border-left: 4px solid color-mix(in srgb, #4a3b30 55%, #2a221c);
+  background: linear-gradient(
+    105deg,
+    color-mix(in srgb, #faf7ef 88%, #c4b8a4) 0%,
+    #faf8f3 18%,
+    #f7f4ec 55%,
+    #f3efe4 100%
+  );
+  box-shadow:
+    inset 1px 0 0 rgba(255, 255, 255, 0.55),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35),
+    0 1px 0 rgba(0, 0, 0, 0.04),
+    0 14px 36px rgba(42, 36, 30, 0.12),
+    2px 0 0 rgba(62, 52, 44, 0.08);
 }
 
 .resume__pdf-lead {

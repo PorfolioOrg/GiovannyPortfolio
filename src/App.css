@@ -6,10 +6,9 @@
 .app main {
   display: block;
 }
+/* Each main section fills at least one viewport height */
 main > section {
   min-height: 100vh;
-  /* display: flex;
-  align-items: center; optional but usually improves layout */
 }
 html {
   scroll-behavior: smooth;

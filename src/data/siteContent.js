@@ -69,8 +69,25 @@ export const contactSocialLinks = [
   },
 ]
 
+import {
+  contactToolkit,
+  contactToolkitLeft,
+  contactToolkitRight,
+} from './contactToolkit.js'
+
+export { contactToolkit, contactToolkitLeft, contactToolkitRight }
+
 export const contact = {
   email: 'giovannyb.tcxr@gmail.com',
   social: contactSocialLinks,
+  toolkit: contactToolkit,
+  toolkitLeft: contactToolkitLeft,
+  toolkitRight: contactToolkitRight,
+  headingIntro:
+    'Reach out for collaborations, freelance work, or a conversation about design and code.',
+  designBlurbs: [
+    'My work sits at the intersection of graphic design and multimedia: layout systems, typography, color, iconography, and presentation-ready visuals that still feel human.',
+    'If you are shaping a brand, polishing a deck, or need a second pair of eyes on composition and hierarchy, I would love to hear what you are building and how I can help.',
+  ],
 }
 
