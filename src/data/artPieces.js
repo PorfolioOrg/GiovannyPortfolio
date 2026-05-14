@@ -54,17 +54,17 @@ const FOLDER_CONFIG = [
   },
   {
     id: 'axel',
-    title: 'Axel\'s Weapon',
+    title: 'Axel\'s Chakrams',
     previewIndex: 0, 
     description:
-      'Axel\s weapon',
+      'I made this model in Maya and Textured it with substance painter, the weapon is a Chakram from the Kingdom Hearts Series. This model was made with metal reflections, micro detail, and clean Game like design in mind. Model is ready to be implemented into a 3D Game engine or 3d Animation software',
   },
   {
     id: 'legoCar',
-    title: 'lego Car',
+    title: 'Lego Racing Crash',
     previewIndex: 0, 
     description:
-      'inspired by burnout paradise',
+      'I made this model in Maya and Textured it with substance painter, the Lego pieces were made using clear life references, and lot of care was put into making the pieces as accurate as possible to the real Lego set\'s standards in mind. Model is able to be rearranged into a variety of Lego models and sets. Model is ready to be implemented into a 3D Game engine or 3d Animation software',
   },
 ]
 
